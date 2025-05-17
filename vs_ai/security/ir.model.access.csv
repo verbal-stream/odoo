@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_vs_ai_provider_user,vs.ai.provider.user,model_vs_ai_provider,vs_ai.group_vs_ai_user,1,0,0,0
+access_vs_ai_provider_manager,vs.ai.provider.manager,model_vs_ai_provider,vs_ai.group_vs_ai_manager,1,1,1,1
+access_vs_ai_model_user,vs.ai.model.user,model_vs_ai_model,vs_ai.group_vs_ai_user,1,0,0,0
+access_vs_ai_model_manager,vs.ai.model.manager,model_vs_ai_model,vs_ai.group_vs_ai_manager,1,1,1,1
+access_vs_ai_setup_wizard_manager,vs.ai.setup.wizard.manager,model_vs_ai_setup_wizard,vs_ai.group_vs_ai_manager,1,1,1,0
