@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Top level menu: VerbalStream -->
+    <menuitem id="menu_verbalstream_root"
+        name="VerbalStream"
+        web_icon="vs_core,static/description/icon.png"
+        sequence="80"/>
+
+    <!-- First level menu under VerbalStream -->
+    <menuitem id="menu_verbalstream_config"
+        name="Configuration"
+        parent="menu_verbalstream_root"
+        sequence="100"/>
+
+    <!-- Configuration menu items -->
+    <menuitem id="menu_vs_config"
+        name="Settings"
+        parent="menu_verbalstream_config"
+        action="action_vs_config"
+        sequence="10"/>
+</odoo>
