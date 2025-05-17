@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_vs_ai_setup_wizard_form" model="ir.ui.view">
+        <field name="name">vs.ai.setup.wizard.form</field>
+        <field name="model">vs.ai.setup.wizard</field>
+        <field name="arch" type="xml">
+            <form string="AI Setup Wizard">
+                <sheet>
+                    <div class="alert alert-info" role="alert" attrs="{'invisible': [('state', '!=', 'setup')]}">
+                        <p>This wizard will help you set up AI providers and fetch available models.</p>
+                    </div>
+                    
+                    <div class="alert alert-success" role="alert" attrs="{'invisible': [('state', '!=', 'complete')]}">
+                        <p><field name="result_message" readonly="1"/></p>
+                    </div>
+                    
+                    <field name="state" invisible="1"/>
+                    
+                    <!-- Setup State -->
+                    <group attrs="{'invisible': [('state', '!=', 'setup')]}">
+                        <group>
+                            <field name="operation" widget="radio"/>
+                        </group>
+                    </group>
+                    
+                    <!-- New Provider Setup -->
+                    <group attrs="{'invisible': ['|', ('state', '!=', 'setup'), ('operation', '!=', 'new_provider')]}">
+                        <group>
+                            <field name="provider_type" required="1"/>
+                            <field name="provider_name" required="1" placeholder="e.g., My OpenAI"/>
+                            <field name="api_key" password="1" attrs="{'required': [('provider_type', '!=', 'ollama')]}"/>
+                            <field name="api_endpoint" placeholder="e.g., https://api.openai.com/v1" attrs="{'required': [('provider_type', '=', 'ollama')]}"/>
+                        </group>
+                    </group>
+                    
+                    <!-- Fetch Models Setup -->
+                    <group attrs="{'invisible': ['|', ('state', '!=', 'setup'), ('operation', '!=', 'fetch_models')]}">
+                        <group>
+                            <field name="provider_id" required="1" options="{'no_create': True}"/>
+                            <field name="fetch_all_models"/>
+                            <field name="model_filter" attrs="{'invisible': [('fetch_all_models', '=', True)]}"/>
+                        </group>
+                    </group>
+                    
+                    <!-- Quick Setup -->
+                    <group attrs="{'invisible': ['|', ('state', '!=', 'setup'), ('operation', '!=', 'quick_setup')]}">
+                        <group string="Select Providers to Set Up">
+                            <field name="setup_openai"/>
+                            <field name="openai_api_key" password="1" attrs="{'invisible': [('setup_openai', '=', False)], 'required': [('setup_openai', '=', True)]}"/>
+                            
+                            <field name="setup_anthropic"/>
+                            <field name="anthropic_api_key" password="1" attrs="{'invisible': [('setup_anthropic', '=', False)], 'required': [('setup_anthropic', '=', True)]}"/>
+                            
+                            <field name="setup_mistral"/>
+                            <field name="mistral_api_key" password="1" attrs="{'invisible': [('setup_mistral', '=', False)], 'required': [('setup_mistral', '=', True)]}"/>
+                            
+                            <field name="setup_ollama"/>
+                            <field name="ollama_endpoint" attrs="{'invisible': [('setup_ollama', '=', False)], 'required': [('setup_ollama', '=', True)]}"/>
+                            
+                            <field name="setup_deepseek"/>
+                            <field name="deepseek_api_key" password="1" attrs="{'invisible': [('setup_deepseek', '=', False)], 'required': [('setup_deepseek', '=', True)]}"/>
+                            
+                            <field name="setup_openrouter"/>
+                            <field name="openrouter_api_key" password="1" attrs="{'invisible': [('setup_openrouter', '=', False)], 'required': [('setup_openrouter', '=', True)]}"/>
+                        </group>
+                    </group>
+                    
+                    <!-- Fetching Models State -->
+                    <group attrs="{'invisible': [('state', '!=', 'fetching')]}">
+                        <group>
+                            <field name="result_provider_id" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <!-- Complete State -->
+                    <group attrs="{'invisible': [('state', '!=', 'complete')]}">
+                        <group>
+                            <field name="result_provider_id" readonly="1"/>
+                            <field name="result_model_count" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+                
+                <footer>
+                    <!-- Setup State Buttons -->
+                    <button string="Continue" type="object" name="action_setup_provider" class="btn-primary" attrs="{'invisible': [('state', '!=', 'setup')]}"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" attrs="{'invisible': [('state', '!=', 'setup')]}"/>
+                    
+                    <!-- Fetching Models State Buttons -->
+                    <button string="Fetch Models" type="object" name="action_fetch_models" class="btn-primary" attrs="{'invisible': [('state', '!=', 'fetching')]}"/>
+                    <button string="Skip" type="object" name="action_view_provider" class="btn-secondary" attrs="{'invisible': [('state', '!=', 'fetching')]}"/>
+                    
+                    <!-- Complete State Buttons -->
+                    <button string="View Provider" type="object" name="action_view_provider" class="btn-primary" attrs="{'invisible': [('state', '!=', 'complete')]}"/>
+                    <button string="View Models" type="object" name="action_view_models" class="btn-secondary" attrs="{'invisible': [('state', '!=', 'complete')]}"/>
+                    <button string="Close" class="btn-secondary" special="cancel" attrs="{'invisible': [('state', '!=', 'complete')]}"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <record id="action_vs_ai_setup_wizard" model="ir.actions.act_window">
+        <field name="name">AI Setup Wizard</field>
+        <field name="res_model">vs.ai.setup.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>
