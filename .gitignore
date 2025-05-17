@@ -1,0 +1,64 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Odoo
+*.log
+*.pot
+*.pyc
+local_settings.py
+db.sqlite3
+media
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Environment variables
+.env
+.env.local
+
+# API keys and secrets
+*.pem
+*.key
+
+# Logs
+logs/
+*.log
+
+# Database
+*.sqlite3
+*.db
+
+# Temporary files
+tmp/
+temp/
+info-llm-1.txt
+

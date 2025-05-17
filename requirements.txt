@@ -1,0 +1,28 @@
+# Core dependencies
+# OpenAI
+openai>=1.0.0
+
+# Anthropic
+anthropic>=0.5.0
+
+# Vector databases
+pgvector>=0.2.0
+chromadb>=0.4.0
+qdrant-client>=1.1.0
+
+# Document processing
+PyMuPDF>=1.22.0
+markdown2>=2.4.0
+markdownify>=0.11.0
+
+# NLP utilities
+nltk>=3.8.0
+numpy>=1.24.0
+
+# Data validation
+pydantic>=2.0.0
+
+# HTTP client
+requests>=2.31.0
+
+# Odoo dependencies will be managed by Odoo itself
