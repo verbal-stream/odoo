@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Menu -->
+    <menuitem id="menu_vs_ai_root" 
+              name="AI" 
+              web_icon="vs_ai,static/description/icon.png" 
+              sequence="80"/>
+    
+    <!-- Configuration Menu -->
+    <menuitem id="menu_vs_ai_config" 
+              name="Configuration" 
+              parent="menu_vs_ai_root" 
+              sequence="100"/>
+    
+    <!-- Provider Menu -->
+    <menuitem id="menu_vs_ai_provider" 
+              name="AI Providers" 
+              parent="menu_vs_ai_config" 
+              action="action_vs_ai_provider" 
+              sequence="10"/>
+    
+    <!-- Model Menu -->
+    <menuitem id="menu_vs_ai_model" 
+              name="AI Models" 
+              parent="menu_vs_ai_config" 
+              action="action_vs_ai_model" 
+              sequence="20"/>
+    
+    <!-- Setup Wizard Menu -->
+    <menuitem id="menu_vs_ai_setup_wizard" 
+              name="Setup Wizard" 
+              parent="menu_vs_ai_config" 
+              action="action_vs_ai_setup_wizard" 
+              sequence="5"/>
+</odoo>

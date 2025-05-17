@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Model Form View -->
+    <record id="view_vs_ai_model_form" model="ir.ui.view">
+        <field name="name">vs.ai.model.form</field>
+        <field name="model">vs.ai.model</field>
+        <field name="arch" type="xml">
+            <form string="AI Model">
+                <header>
+                    <button name="action_make_default" string="Make Default" type="object" 
+                            class="oe_highlight" attrs="{'invisible': [('is_default', '=', True)]}"/>
+                    <button name="action_test_model" string="Test Model" type="object" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1><field name="name" placeholder="e.g., gpt-4"/></h1>
+                        <h2><field name="display_name" readonly="1"/></h2>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="provider_id" options="{'no_create': True}"/>
+                            <field name="provider_type" invisible="1"/>
+                            <field name="model_type"/>
+                            <field name="model_id" groups="base.group_no_one"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="is_default"/>
+                            <field name="sequence"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                            <field name="color" widget="color_picker"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description" placeholder="Describe the model's capabilities and use cases..."/>
+                        </page>
+                        <page string="Capabilities" name="capabilities">
+                            <group>
+                                <group string="Features">
+                                    <field name="supports_tools"/>
+                                    <field name="supports_vision"/>
+                                    <field name="supports_streaming"/>
+                                </group>
+                                <group string="Limits">
+                                    <field name="max_tokens"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Advanced Configuration" name="advanced" groups="vs_ai.group_vs_ai_manager">
+                            <field name="config" widget="json"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Model Tree View -->
+    <record id="view_vs_ai_model_tree" model="ir.ui.view">
+        <field name="name">vs.ai.model.tree</field>
+        <field name="model">vs.ai.model</field>
+        <field name="arch" type="xml">
+            <tree string="AI Models" decoration-success="is_default==True">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="provider_id"/>
+                <field name="model_type"/>
+                <field name="is_default"/>
+                <field name="supports_tools"/>
+                <field name="supports_vision"/>
+                <field name="max_tokens"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- Model Search View -->
+    <record id="view_vs_ai_model_search" model="ir.ui.view">
+        <field name="name">vs.ai.model.search</field>
+        <field name="model">vs.ai.model</field>
+        <field name="arch" type="xml">
+            <search string="Search AI Models">
+                <field name="name"/>
+                <field name="provider_id"/>
+                <field name="model_type"/>
+                <separator/>
+                <filter string="Default Models" name="default" domain="[('is_default', '=', True)]"/>
+                <filter string="Tool Support" name="tools" domain="[('supports_tools', '=', True)]"/>
+                <filter string="Vision Support" name="vision" domain="[('supports_vision', '=', True)]"/>
+                <separator/>
+                <filter string="Chat Models" name="chat" domain="[('model_type', '=', 'chat')]"/>
+                <filter string="Embedding Models" name="embedding" domain="[('model_type', '=', 'embedding')]"/>
+                <filter string="Multimodal Models" name="multimodal" domain="[('model_type', '=', 'multimodal')]"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Provider" name="group_by_provider" domain="[]" context="{'group_by': 'provider_id'}"/>
+                    <filter string="Model Type" name="group_by_type" domain="[]" context="{'group_by': 'model_type'}"/>
+                    <filter string="Default Status" name="group_by_default" domain="[]" context="{'group_by': 'is_default'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Model Kanban View -->
+    <record id="view_vs_ai_model_kanban" model="ir.ui.view">
+        <field name="name">vs.ai.model.kanban</field>
+        <field name="model">vs.ai.model</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" sample="1">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="provider_id"/>
+                <field name="model_type"/>
+                <field name="is_default"/>
+                <field name="supports_tools"/>
+                <field name="supports_vision"/>
+                <field name="color"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click o_kanban_record_has_image_fill o_vs_ai_model_kanban {{record.is_default.raw_value ? 'bg-success-light' : ''}}" t-attf-style="{{record.color.raw_value ? 'border-left: 5px solid #' + record.color.raw_value : ''}}">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <span><field name="name"/></span>
+                                        <span t-if="record.is_default.raw_value" class="badge text-bg-success ms-1">Default</span>
+                                    </strong>
+                                    <span class="o_kanban_record_subtitle">
+                                        <field name="provider_id"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_body mt-2">
+                                <span class="badge text-bg-primary">
+                                    <t t-if="record.model_type.raw_value == 'chat'">Chat</t>
+                                    <t t-if="record.model_type.raw_value == 'completion'">Completion</t>
+                                    <t t-if="record.model_type.raw_value == 'embedding'">Embedding</t>
+                                    <t t-if="record.model_type.raw_value == 'image'">Image</t>
+                                    <t t-if="record.model_type.raw_value == 'multimodal'">Multimodal</t>
+                                </span>
+                                <span t-if="record.supports_tools.raw_value" class="badge text-bg-info ms-1">
+                                    <i class="fa fa-wrench"/> Tools
+                                </span>
+                                <span t-if="record.supports_vision.raw_value" class="badge text-bg-info ms-1">
+                                    <i class="fa fa-eye"/> Vision
+                                </span>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    
+    <!-- Model Action -->
+    <record id="action_vs_ai_model" model="ir.actions.act_window">
+        <field name="name">AI Models</field>
+        <field name="res_model">vs.ai.model</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="search_view_id" ref="view_vs_ai_model_search"/>
+        <field name="context">{'search_default_group_by_provider': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No AI models found!
+            </p>
+            <p>
+                AI models are automatically imported from providers. To add models, first set up an AI provider and then use the "Fetch Models" button.
+            </p>
+            <p>
+                <a type="action" name="%(action_vs_ai_setup_wizard)d" class="btn btn-primary">
+                    <i class="fa fa-magic"/> Use Setup Wizard
+                </a>
+            </p>
+        </field>
+    </record>
+</odoo>

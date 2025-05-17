@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Provider Form View -->
+    <record id="view_vs_ai_provider_form" model="ir.ui.view">
+        <field name="name">vs.ai.provider.form</field>
+        <field name="model">vs.ai.provider</field>
+        <field name="arch" type="xml">
+            <form string="AI Provider">
+                <header>
+                    <button name="action_test_connection" string="Test Connection" type="object" class="oe_highlight"/>
+                    <button name="action_fetch_models" string="Fetch Models" type="object" class="btn-primary"/>
+                    <field name="status" widget="statusbar" statusbar_visible="untested,working,error"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_models" type="object" class="oe_stat_button" icon="fa-list">
+                            <field name="model_count" widget="statinfo" string="Models"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1><field name="name" placeholder="e.g., My OpenAI"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="provider_type"/>
+                            <field name="api_key" password="1" attrs="{'required': [('provider_type', '!=', 'ollama')]}"/>
+                            <field name="api_endpoint" attrs="{'required': [('provider_type', '=', 'ollama')]}"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="last_checked"/>
+                            <field name="color" widget="color_picker"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Status Details" name="status_details">
+                            <group>
+                                <field name="status_message"/>
+                            </group>
+                        </page>
+                        <page string="Models" name="models">
+                            <field name="model_ids" context="{'default_provider_id': active_id}">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="model_type"/>
+                                    <field name="is_default"/>
+                                    <field name="supports_tools"/>
+                                    <field name="supports_vision"/>
+                                    <field name="max_tokens"/>
+                                    <field name="active"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Provider Tree View -->
+    <record id="view_vs_ai_provider_tree" model="ir.ui.view">
+        <field name="name">vs.ai.provider.tree</field>
+        <field name="model">vs.ai.provider</field>
+        <field name="arch" type="xml">
+            <tree string="AI Providers" decoration-danger="status=='error'" decoration-success="status=='working'" decoration-info="status=='untested'">
+                <field name="name"/>
+                <field name="provider_type"/>
+                <field name="status"/>
+                <field name="model_count"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- Provider Search View -->
+    <record id="view_vs_ai_provider_search" model="ir.ui.view">
+        <field name="name">vs.ai.provider.search</field>
+        <field name="model">vs.ai.provider</field>
+        <field name="arch" type="xml">
+            <search string="Search AI Providers">
+                <field name="name"/>
+                <field name="provider_type"/>
+                <separator/>
+                <filter string="Working" name="working" domain="[('status', '=', 'working')]"/>
+                <filter string="Error" name="error" domain="[('status', '=', 'error')]"/>
+                <filter string="Not Tested" name="untested" domain="[('status', '=', 'untested')]"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Provider Type" name="group_by_type" domain="[]" context="{'group_by': 'provider_type'}"/>
+                    <filter string="Status" name="group_by_status" domain="[]" context="{'group_by': 'status'}"/>
+                    <filter string="Company" name="group_by_company" domain="[]" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Provider Kanban View -->
+    <record id="view_vs_ai_provider_kanban" model="ir.ui.view">
+        <field name="name">vs.ai.provider.kanban</field>
+        <field name="model">vs.ai.provider</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" sample="1">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="provider_type"/>
+                <field name="status"/>
+                <field name="model_count"/>
+                <field name="color"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click o_kanban_record_has_image_fill o_vs_ai_provider_kanban {{record.status.raw_value == 'error' ? 'bg-danger-light' : ''}} {{record.status.raw_value == 'working' ? 'bg-success-light' : ''}}" t-attf-style="{{record.color.raw_value ? 'border-left: 5px solid #' + record.color.raw_value : ''}}">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <span><field name="name"/></span>
+                                    </strong>
+                                    <span class="o_kanban_record_subtitle">
+                                        <field name="provider_type"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <span t-if="record.status.raw_value == 'working'" class="badge text-bg-success">
+                                        <i class="fa fa-check-circle"/> Working
+                                    </span>
+                                    <span t-if="record.status.raw_value == 'error'" class="badge text-bg-danger">
+                                        <i class="fa fa-exclamation-circle"/> Error
+                                    </span>
+                                    <span t-if="record.status.raw_value == 'untested'" class="badge text-bg-info">
+                                        <i class="fa fa-question-circle"/> Not Tested
+                                    </span>
+                                </div>
+                                <div class="oe_kanban_bottom_right">
+                                    <span class="badge text-bg-primary">
+                                        <field name="model_count"/> Models
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    
+    <!-- Provider Action -->
+    <record id="action_vs_ai_provider" model="ir.actions.act_window">
+        <field name="name">AI Providers</field>
+        <field name="res_model">vs.ai.provider</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="search_view_id" ref="view_vs_ai_provider_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first AI provider!
+            </p>
+            <p>
+                Connect to AI providers like OpenAI, Anthropic, or Mistral to enable AI capabilities in your system.
+            </p>
+            <p>
+                <a type="action" name="%(action_vs_ai_setup_wizard)d" class="btn btn-primary">
+                    <i class="fa fa-magic"/> Use Setup Wizard
+                </a>
+            </p>
+        </field>
+    </record>
+</odoo>
